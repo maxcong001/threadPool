@@ -15,14 +15,22 @@ typedef std::lock_guard<std::recursive_mutex> M_GUARD;
 typedef std::unique_lock<std::recursive_mutex> M_UNIQUE;
 std::recursive_mutex func_mutex;
 
+enum RET_CODE{
+    M_SUCCESS = 0,
+    M_FAIL,
+    M_MAX
+};
+
 M_TUPLE M_put()
 {
     std::string M_func(__func__);
-
+    
+    // fucntion body
     std::cout << "hello " << '\n'<< std::flush;
     std::this_thread::sleep_for(std::chrono::microseconds(100));//seconds(1));
     std::cout << "world "  << '\n' <<std::flush;
-    return std::make_tuple(M_func, 1);
+
+    return std::make_tuple(M_func, M_SUCCESS);
 }
 
 int main()
