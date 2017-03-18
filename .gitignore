@@ -3,6 +3,7 @@
 /tmp
 /build
 /bin
+/lib
 Makefile
 CMakeFiles
 CMakeCache.txt
