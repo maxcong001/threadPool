@@ -31,6 +31,22 @@
 #include <string>
 #include <tuple>
 #include "MThreadPool.hpp"
+#include <log4cplus/logger.h>
+//#include <log4cplus/consoleappender.h>
+#include <log4cplus/fileappender.h>
+#include <log4cplus/layout.h>
+//#include <log4cplus/ndc.h>
+//#include <log4cplus/mdc.h>
+#include <log4cplus/helpers/loglog.h>
+#include <log4cplus/thread/threads.h>
+//#include <log4cplus/helpers/sleep.h>
+#include <log4cplus/loggingmacros.h>
+
+
+using namespace std;
+using namespace log4cplus;
+using namespace log4cplus::helpers;
+Logger logger = Logger::getInstance(LOG4CPLUS_TEXT("Max:"));
 
 using namespace std;
 typedef tuple<string, int> M_TUPLE;
@@ -51,15 +67,41 @@ M_TUPLE M_put()
     std::string M_func(__func__);
     
     // fucntion body
-    std::cout << "hello " << '\n'<< std::flush;
+    LOG4CPLUS_DEBUG(logger, "hello!");
     std::this_thread::sleep_for(std::chrono::microseconds(100));//seconds(1));
-    std::cout << "world "  << '\n' <<std::flush;
+    LOG4CPLUS_DEBUG(logger, "world!");
+
 
     return std::make_tuple(M_func, M_SUCCESS);
+}
+void M_LOG()
+{
+
 }
 
 int main()
 {
+
+    log4cplus::initialize ();
+    try {
+        SharedObjectPtr<Appender> append_1(new FileAppender("Test.log"));
+        append_1->setName(LOG4CPLUS_TEXT("First"));
+
+        log4cplus::tstring pattern = LOG4CPLUS_TEXT("[%d{%m/%d/%y %H:%M:%S,%Q}] %c %-5p - %m [%l]%n");
+        //  std::tstring pattern = LOG4CPLUS_TEXT("%d{%c} [%t] %-5p [%.15c{3}] %%%x%% - %m [%l]%n");
+        append_1->setLayout( std::auto_ptr<Layout>(new PatternLayout(pattern)) );
+        Logger::getRoot().addAppender(append_1);
+
+        logger.setLogLevel(DEBUG_LOG_LEVEL);
+
+    }
+    catch(...) {
+        Logger::getRoot().log(FATAL_LOG_LEVEL, LOG4CPLUS_TEXT("Exception occured..."));
+    }
+
+    LOG4CPLUS_DEBUG(logger, "set logger done!"<<"\nhello log4cplus\n");
+
+
     int thread_num = std::thread::hardware_concurrency();
     if (!thread_num)
     {
