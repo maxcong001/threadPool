@@ -2,7 +2,6 @@
 *.lua
 /tmp
 /build
-/lib
 /bin
 Makefile
 CMakeFiles
