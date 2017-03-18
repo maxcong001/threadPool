@@ -71,7 +71,7 @@ int main()
     M_VECTOR.push_back(M_put);
     M_VECTOR.push_back(M_put);
 
-    std::cout<< " start "<< thread_num << "threads"<<std::endl;
+    std::cout<< " start "<< thread_num << " threads"<<std::endl;
 
     ThreadPool pool(thread_num);
     std::vector< std::future<M_TUPLE> > results;
