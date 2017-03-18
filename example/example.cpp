@@ -30,7 +30,7 @@
 #include <thread>
 #include <string>
 #include <tuple>
-#include "ThreadPool.hpp"
+#include "MThreadPool.hpp"
 
 using namespace std;
 typedef tuple<string, int> M_TUPLE;
@@ -63,15 +63,16 @@ int main()
     int thread_num = std::thread::hardware_concurrency();
     if (!thread_num)
     {
-        thread_num = 1;
+        thread_num = 2;
     }
-
+    // now Jsaon's code does not support multi-client. So set the thread pool to one thread
+    thread_num = 1;
     M_VECTOR.push_back(M_put);
     M_VECTOR.push_back(M_put);
     M_VECTOR.push_back(M_put);
     M_VECTOR.push_back(M_put);
 
-    std::cout<< " start "<< thread_num << " threads"<<std::endl;
+    std::cout<< " start "<< thread_num << "threads"<<std::endl;
 
     ThreadPool pool(thread_num);
     std::vector< std::future<M_TUPLE> > results;
