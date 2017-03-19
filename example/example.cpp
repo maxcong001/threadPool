@@ -87,7 +87,7 @@ int main()
 
 
         results.emplace_back(
-        pool.enqueue([&] {
+        pool.enqueue([=] {
             return tmp();
             })
         );
