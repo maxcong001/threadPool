@@ -4,5 +4,11 @@
 need C++11
 
 ```
-g++ example.cpp -lpthread -std=c++11
+mkdir build;cd build;cmake ..;make -j4
 ```
+lib is under: lib
+example binary is under: build/bin
+
+enjoy!
+
+--Max
