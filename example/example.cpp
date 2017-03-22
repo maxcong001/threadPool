@@ -51,9 +51,16 @@ M_TUPLE M_put()
     std::string M_func(__func__);
     
     // fucntion body
-    std::cout << "hello " << '\n'<< std::flush;
+
+    time_t rawtime;
+    struct tm * timeinfo;
+
+    time (&rawtime);
+    timeinfo = localtime (&rawtime);
+    std::cout<< "start time is "<< asctime(timeinfo)<<'\n';
+    std::cout<< "threadid is "<<std::this_thread::get_id()<<'\n';
     std::this_thread::sleep_for(std::chrono::microseconds(100));//seconds(1));
-    std::cout << "world "  << '\n' <<std::flush;
+
 
     return std::make_tuple(M_func, M_SUCCESS);
 }
