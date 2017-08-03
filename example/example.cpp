@@ -105,10 +105,9 @@ int main()
     int thread_num = std::thread::hardware_concurrency();
     if (!thread_num)
     {
-        thread_num = 2;
+        thread_num = 1;
     }
-    // now Jsaon's code does not support multi-client. So set the thread pool to one thread
-    thread_num = 1;
+
     M_VECTOR.push_back(M_put);
     M_VECTOR.push_back(M_put);
     M_VECTOR.push_back(M_put);
