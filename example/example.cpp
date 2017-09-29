@@ -42,7 +42,6 @@
 //#include <log4cplus/helpers/sleep.h>
 #include <log4cplus/loggingmacros.h>
 
-
 using namespace std;
 using namespace log4cplus;
 using namespace log4cplus::helpers;
@@ -51,12 +50,13 @@ Logger logger = Logger::getInstance(LOG4CPLUS_TEXT("Max:"));
 using namespace std;
 typedef tuple<string, int> M_TUPLE;
 typedef std::function<M_TUPLE()> M_FUNCTION;
-vector< std::function<tuple<string, int>()> > M_VECTOR;
+vector<std::function<tuple<string, int>()>> M_VECTOR;
 typedef std::lock_guard<std::recursive_mutex> M_GUARD;
 typedef std::unique_lock<std::recursive_mutex> M_UNIQUE;
 std::recursive_mutex func_mutex;
 
-enum RET_CODE{
+enum RET_CODE
+{
     M_SUCCESS = 0,
     M_FAIL,
     M_MAX
@@ -65,91 +65,71 @@ enum RET_CODE{
 M_TUPLE M_put()
 {
     std::string M_func(__func__);
-    
     // fucntion body
     LOG4CPLUS_DEBUG(logger, "hello!");
-    std::this_thread::sleep_for(std::chrono::microseconds(100));//seconds(1));
+    std::this_thread::sleep_for(std::chrono::microseconds(100)); //seconds(1));
     LOG4CPLUS_DEBUG(logger, "world!");
-
-
     return std::make_tuple(M_func, M_SUCCESS);
 }
 void M_LOG()
 {
-
 }
 
 int main()
 {
-
-    log4cplus::initialize ();
-    try {
+    log4cplus::initialize();
+    try
+    {
         SharedObjectPtr<Appender> append_1(new FileAppender("Test.log"));
         append_1->setName(LOG4CPLUS_TEXT("First"));
 
         log4cplus::tstring pattern = LOG4CPLUS_TEXT("[%d{%m/%d/%y %H:%M:%S,%Q}] %c %-5p - %m [%l]%n");
         //  std::tstring pattern = LOG4CPLUS_TEXT("%d{%c} [%t] %-5p [%.15c{3}] %%%x%% - %m [%l]%n");
-        append_1->setLayout( std::auto_ptr<Layout>(new PatternLayout(pattern)) );
+        append_1->setLayout(std::auto_ptr<Layout>(new PatternLayout(pattern)));
         Logger::getRoot().addAppender(append_1);
-
         logger.setLogLevel(DEBUG_LOG_LEVEL);
-
     }
-    catch(...) {
+    catch (...)
+    {
         Logger::getRoot().log(FATAL_LOG_LEVEL, LOG4CPLUS_TEXT("Exception occured..."));
     }
-
-    LOG4CPLUS_DEBUG(logger, "set logger done!"<<"\nhello log4cplus\n");
-
-
+    LOG4CPLUS_DEBUG(logger, "set logger done!"
+                                << "\nhello log4cplus\n");
     int thread_num = std::thread::hardware_concurrency();
     if (!thread_num)
     {
         thread_num = 1;
     }
-
     M_VECTOR.push_back(M_put);
     M_VECTOR.push_back(M_put);
     M_VECTOR.push_back(M_put);
     M_VECTOR.push_back(M_put);
-
-    std::cout<< " start "<< thread_num << "threads"<<std::endl;
-
+    std::cout << " start " << thread_num << "threads" << std::endl;
     ThreadPool pool(thread_num);
-    std::vector< std::future<M_TUPLE> > results;
+    std::vector<std::future<M_TUPLE>> results;
     M_FUNCTION tmp;
-
-    while(!M_VECTOR.empty()) 
+    while (!M_VECTOR.empty())
     {
         {
             M_GUARD lock1(func_mutex);
             tmp = M_VECTOR.back();
         }
-
-
         results.emplace_back(
-        pool.enqueue([=] {
-            return tmp();
-            })
-        );
+            pool.enqueue([=] {
+                return tmp();
+            }));
         {
             M_GUARD lock1(func_mutex);
             M_VECTOR.pop_back();
         }
-
     }
-
-
-    for(auto && result: results)
+    for (auto &&result : results)
     {
         std::string tmp_str;
         int tmp_bool;
         tie(tmp_str, tmp_bool) = result.get();
-        cout << "string is "<< tmp_str<< "bool is "<<tmp_bool<<endl;
+        cout << "string is " << tmp_str << "bool is " << tmp_bool << endl;
     }
-
     std::cout << std::flush;
-
     return 0;
 }
-
